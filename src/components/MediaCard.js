@@ -24,7 +24,7 @@ function MediaCard({ draft, onEdit }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={onEdit}>Continue Editing</Button>
+        <Button size="small" onClick={event=>onEdit(draft)}>Continue Editing</Button>
       </CardActions>
     </Card>
   );

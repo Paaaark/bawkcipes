@@ -1,14 +1,17 @@
-import * as React from 'react';
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import Button from '@mui/material/Button';
-import Typography from '@mui/material/Typography';
+import * as React from "react";
+import Card from "@mui/material/Card";
+import CardActions from "@mui/material/CardActions";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
+import { Button } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 function MediaCard({ draft, onEdit }) {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: 345 }}>
       <CardMedia
         component="img"
         height="140"
@@ -24,7 +27,25 @@ function MediaCard({ draft, onEdit }) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={event=>onEdit(draft)}>Continue Editing</Button>
+        <Grid container spacing={1} direction="row">
+          <Grid item xs>
+            <Button
+              fullWidth
+              variant="outlined"
+              size="medium"
+              onClick={(event) => onEdit(draft)}
+              startIcon={<EditIcon />}
+            />
+          </Grid>
+          <Grid item xs>
+            <Button
+              fullWidth
+              variant="outlined"
+              size="medium"
+              startIcon={<DeleteIcon />}
+            />
+          </Grid>
+        </Grid>
       </CardActions>
     </Card>
   );

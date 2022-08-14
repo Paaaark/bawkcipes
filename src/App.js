@@ -7,8 +7,14 @@ import AddFragment from "./components/AddFragment";
 import { ThemeProvider } from "@mui/material/styles";
 import myTheme from "./myTheme";
 import EditingDraft from "./components/EditingDraft";
+import db from "./firebase";
+import { getDocs, collection } from "firebase/firestore";
 
 const App = () => {
+  React.useEffect(() => {
+    getDrafts();
+  }, []);
+
   let sampleData = [
     {
       id: "test1",
@@ -21,6 +27,14 @@ const App = () => {
       description: "test2 desc",
     },
   ];
+
+  async function getDrafts() {
+    const snapshot = await getDocs(collection(db, "drafts"));
+    const drafts = snapshot.docs.map((doc) => doc.data());
+    console.log(snapshot);
+    console.log(drafts);
+    setDrafts(drafts);
+  }
 
   const [fragmentStatus, setFragmentStatus] = useState("main");
   const [currentEditingDraft, setCurrentEditingDraft] = useState();

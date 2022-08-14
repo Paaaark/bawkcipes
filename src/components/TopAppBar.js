@@ -6,6 +6,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import PetsIcon from "@mui/icons-material/Pets";
 import myTheme from "../myTheme";
 
 const TopAppBar = ({ title, toMain, toAdd }) => {
@@ -32,7 +33,13 @@ const TopAppBar = ({ title, toMain, toAdd }) => {
               <ArrowBackIcon />
             </IconButton>
           ) : (
-            ""
+            <PetsIcon
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+            />
           )}
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>

@@ -78,13 +78,7 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
   };
 
   return (
-    <Grid
-      container
-      direction="column"
-      alignItems="center"
-      paddingLeft="10px"
-      paddingTop="10px"
-    >
+    <Grid container direction="column" alignItems="center" paddingTop="10px">
       <Grid
         container
         width="100vw"
@@ -109,7 +103,7 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
               Add Steps
             </Button>
             <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
-            <Grid container spacing={0.5} direction="row">
+            <Grid container spacing={1.5} direction="row">
               <Grid item xs>
                 <Button
                   fullWidth

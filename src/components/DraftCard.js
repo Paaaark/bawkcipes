@@ -3,13 +3,13 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import { Button } from "@mui/material";
+import { Button, IconButton } from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Grid from "@mui/material/Grid";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
-function MediaCard({ draft, onEdit }) {
+function DraftCard({ draft, onEdit }) {
   return (
     <Card sx={{ width: 345 }}>
       <CardMedia
@@ -28,22 +28,15 @@ function MediaCard({ draft, onEdit }) {
       </CardContent>
       <CardActions>
         <Grid container spacing={1} direction="row">
-          <Grid item xs>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="medium"
-              onClick={(event) => onEdit(draft)}
-              startIcon={<EditIcon />}
-            />
+          <Grid item xs align="center">
+            <IconButton size="medium" onClick={(event) => onEdit(draft)}>
+              <EditIcon />
+            </IconButton>
           </Grid>
-          <Grid item xs>
-            <Button
-              fullWidth
-              variant="outlined"
-              size="medium"
-              startIcon={<DeleteIcon />}
-            />
+          <Grid item xs align="center">
+            <IconButton size="medium">
+              <DeleteIcon />
+            </IconButton>
           </Grid>
         </Grid>
       </CardActions>
@@ -51,4 +44,4 @@ function MediaCard({ draft, onEdit }) {
   );
 }
 
-export default MediaCard;
+export default DraftCard;

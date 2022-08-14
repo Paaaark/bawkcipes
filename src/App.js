@@ -2,43 +2,43 @@ import React from "react";
 import { useState } from "react";
 import TopAppBar from "./components/TopAppBar";
 import FloatingActionButton from "./components/FloatingActionButton";
-import MediaCard from "./components/MediaCard";
 import AddFragment from "./components/AddFragment";
 import { ThemeProvider } from "@mui/material/styles";
 import myTheme from "./myTheme";
 import EditingDraft from "./components/EditingDraft";
 import db from "./firebase";
 import { getDocs, collection } from "firebase/firestore";
+import MainFragment from "./components/MainFragment";
 
 const App = () => {
   React.useEffect(() => {
     getDrafts();
+    getRecipes();
   }, []);
-
-  let sampleData = [
-    {
-      id: "test1",
-      title: "test1",
-      description: "test1 desc",
-    },
-    {
-      id: "test2",
-      title: "test2",
-      description: "test2 desc",
-    },
-  ];
 
   async function getDrafts() {
     const snapshot = await getDocs(collection(db, "drafts"));
-    const drafts = snapshot.docs.map((doc) => doc.data());
-    console.log(snapshot);
-    console.log(drafts);
+    const drafts = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      data.key = doc.id;
+      return data;
+    });
     setDrafts(drafts);
+    console.log(drafts);
+  }
+
+  async function getRecipes() {
+    const snapshot = await getDocs(collection(db, "recipes"));
+    const recipes = snapshot.docs.map((doc) => doc.data());
+    setRecipes(recipes);
   }
 
   const [fragmentStatus, setFragmentStatus] = useState("main");
   const [currentEditingDraft, setCurrentEditingDraft] = useState();
-  const [drafts, setDrafts] = useState(sampleData);
+  const [drafts, setDrafts] = useState([]);
+  const [recipes, setRecipes] = useState([
+    { title: "Manual", description: "Manual" },
+  ]);
 
   const toAdd = () => {
     setFragmentStatus("add");
@@ -46,6 +46,11 @@ const App = () => {
 
   const toMain = () => {
     setFragmentStatus("main");
+  };
+
+  const expandRecipe = (recipe) => {
+    console.log(recipe);
+    console.log("Card clicked");
   };
 
   const editDraft = (draft) => {
@@ -82,7 +87,7 @@ const App = () => {
         );
       case "main":
       default:
-        return <h1>main</h1>;
+        return <MainFragment recipes={recipes} expandRecipe={expandRecipe} />;
     }
   };
 

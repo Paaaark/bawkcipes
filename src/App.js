@@ -9,6 +9,7 @@ import EditingDraft from "./components/EditingDraft";
 import db from "./firebase";
 import { getDocs, collection } from "firebase/firestore";
 import MainFragment from "./components/MainFragment";
+import RecipeFragment from "./components/RecipeFragment";
 
 const App = () => {
   React.useEffect(() => {
@@ -35,6 +36,10 @@ const App = () => {
 
   const [fragmentStatus, setFragmentStatus] = useState("main");
   const [currentEditingDraft, setCurrentEditingDraft] = useState();
+  const [viewingRecipe, setViewingRecipe] = useState({
+    title: "",
+    description: "",
+  });
   const [drafts, setDrafts] = useState([]);
   const [recipes, setRecipes] = useState([
     { title: "Manual", description: "Manual" },
@@ -49,8 +54,8 @@ const App = () => {
   };
 
   const expandRecipe = (recipe) => {
-    console.log(recipe);
-    console.log("Card clicked");
+    setFragmentStatus("recipe");
+    setViewingRecipe(recipe);
   };
 
   const editDraft = (draft) => {
@@ -71,6 +76,8 @@ const App = () => {
         return "Saved Drafts";
       case "edit":
         return "Editing Recipe";
+      case "recipe":
+        return viewingRecipe.title;
       case "main":
       default:
         return "Bawkcipes";
@@ -85,6 +92,8 @@ const App = () => {
         return (
           <EditingDraft draft={currentEditingDraft} onSaveDraft={saveDraft} />
         );
+      case "recipe":
+        return <RecipeFragment recipe={viewingRecipe} />;
       case "main":
       default:
         return <MainFragment recipes={recipes} expandRecipe={expandRecipe} />;

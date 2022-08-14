@@ -28,7 +28,7 @@ const TopAppBar = ({ title, toMain, toAdd }) => {
               color="inherit"
               aria-label="menu"
               sx={{ mr: 2 }}
-              onClick={title === "Saved Drafts" ? toMain : toAdd}
+              onClick={title === "Editing Recipe" ? toAdd : toMain}
             >
               <ArrowBackIcon />
             </IconButton>

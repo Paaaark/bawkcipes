@@ -15,6 +15,7 @@ const myTheme = createTheme({
     gray: {
       main: "#999999",
     },
+    black: "#000000",
   },
   typography: {
     fontFamily: ["Roboto"],

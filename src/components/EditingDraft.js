@@ -9,7 +9,7 @@ import { Button } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import styles from "../styles.css";
 
-const EditingDraft = ({ draft }) => {
+const EditingDraft = ({ draft, onSaveDraft }) => {
   const theme = useTheme();
   if (!("steps" in draft)) draft.steps = [];
   const [title, setTitle] = useState(draft.title);
@@ -17,8 +17,6 @@ const EditingDraft = ({ draft }) => {
   const [steps, setSteps] = useState(draft.steps);
   const [titleOnEdit, setTitleOnEdit] = useState(false);
   const [descOnEdit, setDescOnEdit] = useState(false);
-
-  console.log(draft);
 
   const onAddSteps = () => {
     setSteps([...steps, ""]);
@@ -30,6 +28,13 @@ const EditingDraft = ({ draft }) => {
 
   const toggleDesc = (e) => {
     setDescOnEdit(!descOnEdit);
+  };
+
+  const getDraft = (e) => {
+    draft.title = title;
+    draft.description = desc;
+    draft.steps = steps;
+    return draft;
   };
 
   const getTextField = (label, value, onBlur, onChange, multiLine) => {
@@ -106,7 +111,12 @@ const EditingDraft = ({ draft }) => {
             <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
             <Grid container spacing={0.5} direction="row">
               <Grid item xs>
-                <Button fullWidth color="secondary" variant="outlined">
+                <Button
+                  fullWidth
+                  color="secondary"
+                  variant="outlined"
+                  onClick={() => onSaveDraft(getDraft())}
+                >
                   Save Draft
                 </Button>
               </Grid>

@@ -7,6 +7,7 @@ import { Stack } from "@mui/system";
 import { useTheme } from "@emotion/react";
 import { Button } from "@mui/material";
 import Divider from "@mui/material/Divider";
+import Typography from "@mui/material/Typography";
 import styles from "../styles.css";
 
 const EditingDraft = ({ draft, onSaveDraft }) => {
@@ -56,23 +57,23 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
       <div
         onClick={toggleTitle}
         style={{
-          textAlign: "center",
           textTransform: "uppercase",
           cursor: "pointer",
         }}
       >
-        <h3>{title}</h3>
+        <Typography variant="h3" align="center">
+          {title}
+        </Typography>
       </div>
     );
   };
 
   const getDescText = () => {
     return (
-      <div
-        onClick={toggleDesc}
-        style={{ textAlign: "center", cursor: "pointer" }}
-      >
-        <p style={{ color: "#999999" }}>{desc}</p>
+      <div onClick={toggleDesc} style={{ cursor: "pointer" }}>
+        <Typography variant="body1" align="center" color="#999999">
+          {desc}
+        </Typography>
       </div>
     );
   };
@@ -95,10 +96,21 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
             {descOnEdit
               ? getTextField("Description", desc, toggleDesc, setDesc, true)
               : getDescText()}
-            <h2>Recipe</h2>
-            {steps.map((step, index) =>
-              getTextField("Step " + (index + 1), "")
-            )}
+            <Typography variant="h5">Recipe</Typography>
+            {steps.map((step, index) => (
+              <TextField
+                fullWidth
+                label={"Step " + (index + 1)}
+                variant="standard"
+                onChange={(event) =>
+                  setSteps(
+                    steps.map((step, i) =>
+                      i == index ? event.target.value : step
+                    )
+                  )
+                }
+              />
+            ))}
             <Button color="secondary" variant="outlined" onClick={onAddSteps}>
               Add Steps
             </Button>

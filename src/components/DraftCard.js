@@ -11,7 +11,14 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 function DraftCard({ draft, onEdit }) {
   return (
-    <Card sx={{ width: 345 }}>
+    <Card
+      sx={{
+        width: 345,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+      }}
+    >
       <CardMedia
         component="img"
         height="140"

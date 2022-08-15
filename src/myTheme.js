@@ -1,6 +1,6 @@
-import { createTheme } from "@mui/material/styles";
+import { createTheme, responsiveFontSizes } from "@mui/material/styles";
 
-const myTheme = createTheme({
+let myTheme = createTheme({
   palette: {
     primary: {
       light: "#115c88",
@@ -21,5 +21,7 @@ const myTheme = createTheme({
     fontFamily: ["Roboto"],
   },
 });
+
+myTheme = responsiveFontSizes(myTheme);
 
 export default myTheme;

@@ -1,8 +1,9 @@
 import React from "react";
 import DraftCard from "./DraftCard";
-import { Grid } from "@mui/material";
+import { Grid, IconButton, Typography } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
-const AddFragment = ({ drafts, onEdit }) => {
+const AddFragment = ({ drafts, onEdit, onCreate }) => {
   return (
     <Grid
       container
@@ -15,7 +16,26 @@ const AddFragment = ({ drafts, onEdit }) => {
       {drafts.map((draft) => (
         <DraftCard draft={draft} onEdit={onEdit} />
       ))}
-      <DraftCard draft={{ title: "1", description: "1" }} onEdit={onEdit} />
+      <Grid
+        container
+        width="345px"
+        height="345px"
+        direction="row"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <Grid
+          container
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <IconButton onClick={onCreate}>
+            <AddIcon />
+          </IconButton>
+          <Typography variant="h5">Create a new draft!</Typography>
+        </Grid>
+      </Grid>
     </Grid>
   );
 };

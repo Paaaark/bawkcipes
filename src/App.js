@@ -63,11 +63,23 @@ const App = () => {
     setCurrentEditingDraft(draft);
   };
 
-  const saveDraft = (draft) => {
+  const onCreate = () => {
+    setFragmentStatus("edit");
+    setCurrentEditingDraft({
+      id: "onCreate id",
+    });
+  };
+
+  const saveDraft = (newDraft) => {
     setFragmentStatus("add");
-    setDrafts((oldDrafts) =>
-      oldDrafts.map((oldDraft) => (oldDraft.id === draft.id ? draft : oldDraft))
+    setDrafts(
+      drafts.map((oldDraft) =>
+        oldDraft.id === newDraft.id ? newDraft : oldDraft
+      )
     );
+    if (!drafts.find((oldDraft) => oldDraft.id === newDraft.id)) {
+      setDrafts([...drafts, newDraft]);
+    }
   };
 
   const getTopBarStatus = () => {
@@ -87,7 +99,9 @@ const App = () => {
   const renderMainFragment = () => {
     switch (fragmentStatus) {
       case "add":
-        return <AddFragment drafts={drafts} onEdit={editDraft} />;
+        return (
+          <AddFragment drafts={drafts} onEdit={editDraft} onCreate={onCreate} />
+        );
       case "edit":
         return (
           <EditingDraft draft={currentEditingDraft} onSaveDraft={saveDraft} />

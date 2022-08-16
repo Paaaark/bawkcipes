@@ -2,7 +2,6 @@ import React from "react";
 import { Grid } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import styles from "../styles.css";
 
 const RecipeFragment = ({ recipe }) => {
   return (

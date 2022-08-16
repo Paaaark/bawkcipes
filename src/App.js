@@ -7,17 +7,24 @@ import { ThemeProvider } from "@mui/material/styles";
 import myTheme from "./myTheme";
 import EditingDraft from "./components/EditingDraft";
 import db from "./firebase";
-import { getDocs, collection } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  setDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
 import MainFragment from "./components/MainFragment";
 import RecipeFragment from "./components/RecipeFragment";
+import { generateId } from "./Backend";
 
 const App = () => {
   React.useEffect(() => {
-    getDrafts();
-    getRecipes();
+    getDraftsFromDatabase();
+    getRecipesFromDatabase();
   }, []);
 
-  async function getDrafts() {
+  async function getDraftsFromDatabase() {
     const snapshot = await getDocs(collection(db, "drafts"));
     const drafts = snapshot.docs.map((doc) => {
       const data = doc.data();
@@ -28,10 +35,22 @@ const App = () => {
     console.log(drafts);
   }
 
-  async function getRecipes() {
+  async function uploadDraftToDatabase(draft) {
+    await setDoc(doc(db, "drafts", draft.id), draft);
+  }
+
+  async function getRecipesFromDatabase() {
     const snapshot = await getDocs(collection(db, "recipes"));
     const recipes = snapshot.docs.map((doc) => doc.data());
     setRecipes(recipes);
+  }
+
+  async function deleteDraftFromDatabase(draft) {
+    await deleteDoc(doc(db, "drafts", draft.id));
+  }
+
+  async function uploadRecipeToDatabase(draft) {
+    await setDoc(doc(db, "recipes", draft.id), draft);
   }
 
   const [fragmentStatus, setFragmentStatus] = useState("main");
@@ -64,10 +83,12 @@ const App = () => {
   };
 
   const onCreate = () => {
-    setFragmentStatus("edit");
     setCurrentEditingDraft({
-      id: "onCreate id",
+      id: generateId(),
+      title: "",
+      description: "",
     });
+    setFragmentStatus("edit");
   };
 
   const saveDraft = (newDraft) => {
@@ -80,6 +101,15 @@ const App = () => {
     if (!drafts.find((oldDraft) => oldDraft.id === newDraft.id)) {
       setDrafts([...drafts, newDraft]);
     }
+    uploadDraftToDatabase(newDraft);
+  };
+
+  const uploadDraft = (newDraft) => {
+    setFragmentStatus("main");
+    setDrafts(drafts.filter((draft) => draft.id !== newDraft.id));
+    setRecipes([...recipes, newDraft]);
+    deleteDraftFromDatabase(newDraft);
+    uploadRecipeToDatabase(newDraft);
   };
 
   const getTopBarStatus = () => {
@@ -104,7 +134,11 @@ const App = () => {
         );
       case "edit":
         return (
-          <EditingDraft draft={currentEditingDraft} onSaveDraft={saveDraft} />
+          <EditingDraft
+            draft={currentEditingDraft}
+            onSaveDraft={saveDraft}
+            uploadDraft={uploadDraft}
+          />
         );
       case "recipe":
         return <RecipeFragment recipe={viewingRecipe} />;

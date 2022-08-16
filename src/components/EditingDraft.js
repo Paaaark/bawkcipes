@@ -1,23 +1,44 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
-import PropTypes from "prop-types";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { Stack } from "@mui/system";
-import { useTheme } from "@emotion/react";
 import { Button } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import styles from "../styles.css";
 
-const EditingDraft = ({ draft, onSaveDraft }) => {
-  const theme = useTheme();
+const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
   if (!("steps" in draft)) draft.steps = [];
+  const ref = useRef(null);
   const [title, setTitle] = useState(draft.title);
   const [desc, setDesc] = useState(draft.description);
   const [steps, setSteps] = useState(draft.steps);
+  const [image, setImage] = useState(null);
   const [titleOnEdit, setTitleOnEdit] = useState(false);
   const [descOnEdit, setDescOnEdit] = useState(false);
+  const [dimensions, setDimensions] = React.useState({
+    width: 0,
+    height: 0,
+  });
+
+  const handleResize = () => {
+    setDimensions({
+      width: ref.current.offsetWidth,
+      height: Math.floor(ref.current.offsetWidth / 16),
+    });
+    console.log("Window resized");
+    console.log(dimensions);
+  };
+
+  useEffect(() => {
+    setDimensions({
+      width: ref.current.offsetWidth,
+      height: Math.floor(ref.current.offsetWidth / 16),
+    });
+    window.addEventListener("resize", handleResize, false);
+    console.log(dimensions);
+  }, []);
 
   const onAddSteps = () => {
     setSteps([...steps, ""]);
@@ -62,7 +83,7 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
         }}
       >
         <Typography variant="h3" align="center">
-          {title}
+          {title.length === 0 ? "Title" : title}
         </Typography>
       </div>
     );
@@ -72,7 +93,7 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
     return (
       <div onClick={toggleDesc} style={{ cursor: "pointer" }}>
         <Typography variant="body1" align="center" color="#999999">
-          {desc}
+          {desc.length === 0 ? "Description" : desc}
         </Typography>
       </div>
     );
@@ -88,8 +109,28 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
         direction="column"
         alignItems="center"
       >
-        <div className="textBox">
+        <div ref={ref} className="textBox">
           <Stack spacing={0.5} direction="column">
+            {image !== null ? (
+              <img
+                width={dimensions.width}
+                height={dimensions.height}
+                src={URL.createObjectURL(image)}
+                style={{ objectFit: "cover" }}
+              />
+            ) : (
+              ""
+            )}
+            <Button variant="outlined" component="label">
+              ADD PHOTO
+              <input
+                type="file"
+                hidden
+                onChange={(event) => {
+                  if (event.target.files) setImage(event.target.files[0]);
+                }}
+              />
+            </Button>
             {titleOnEdit
               ? getTextField("Title", title, toggleTitle, setTitle, false)
               : getTitleText()}
@@ -102,10 +143,11 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
                 fullWidth
                 label={"Step " + (index + 1)}
                 variant="standard"
+                defaultValue={step}
                 onChange={(event) =>
                   setSteps(
                     steps.map((step, i) =>
-                      i == index ? event.target.value : step
+                      i === index ? event.target.value : step
                     )
                   )
                 }
@@ -127,7 +169,12 @@ const EditingDraft = ({ draft, onSaveDraft }) => {
                 </Button>
               </Grid>
               <Grid item xs>
-                <Button fullWidth color="secondary" variant="outlined">
+                <Button
+                  fullWidth
+                  color="secondary"
+                  variant="outlined"
+                  onClick={() => uploadDraft(getDraft())}
+                >
                   Upload Recipe
                 </Button>
               </Grid>

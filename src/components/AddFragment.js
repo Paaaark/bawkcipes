@@ -3,7 +3,7 @@ import DraftCard from "./DraftCard";
 import { Grid, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
-const AddFragment = ({ drafts, onEdit, onCreate }) => {
+const AddFragment = ({ drafts, onEdit, onCreate, onDelete }) => {
   return (
     <Grid
       container
@@ -14,7 +14,7 @@ const AddFragment = ({ drafts, onEdit, onCreate }) => {
       paddingLeft="10px"
     >
       {drafts.map((draft) => (
-        <DraftCard draft={draft} onEdit={onEdit} />
+        <DraftCard draft={draft} onEdit={onEdit} onDelete={onDelete} />
       ))}
       <Grid
         container

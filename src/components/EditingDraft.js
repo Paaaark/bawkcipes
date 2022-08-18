@@ -7,14 +7,22 @@ import { Button } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import styles from "../styles.css";
+import { storage } from "../firebase";
+import { getDownloadURL, ref } from "firebase/storage";
 
 const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
   if (!("steps" in draft)) draft.steps = [];
-  const ref = useRef(null);
+  const mainDiv = useRef(null);
   const [title, setTitle] = useState(draft.title);
   const [desc, setDesc] = useState(draft.description);
   const [steps, setSteps] = useState(draft.steps);
   const [image, setImage] = useState(null);
+  const [imagePath, setImagePath] = useState(
+    draft.imagePath ? draft.imagePath : null
+  );
+  const [imageUploaded, setImageUploaded] = useState(
+    draft.imageUploaded ? draft.imageUploaded : false
+  );
   const [titleOnEdit, setTitleOnEdit] = useState(false);
   const [descOnEdit, setDescOnEdit] = useState(false);
   const [dimensions, setDimensions] = React.useState({
@@ -24,8 +32,8 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
 
   const handleResize = () => {
     setDimensions({
-      width: ref.current.offsetWidth,
-      height: Math.floor(ref.current.offsetWidth / 16),
+      width: mainDiv.current.offsetWidth,
+      height: Math.floor(mainDiv.current.offsetWidth / 16),
     });
     console.log("Window resized");
     console.log(dimensions);
@@ -33,11 +41,15 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
 
   useEffect(() => {
     setDimensions({
-      width: ref.current.offsetWidth,
-      height: Math.floor(ref.current.offsetWidth / 16),
+      width: mainDiv.current.offsetWidth,
+      height: Math.floor(mainDiv.current.offsetWidth / 16),
     });
     window.addEventListener("resize", handleResize, false);
-    console.log(dimensions);
+    if (draft.imageUploaded) {
+      getDownloadURL(ref(storage, draft.imagePath)).then((url) => {
+        setImagePath(url);
+      });
+    }
   }, []);
 
   const onAddSteps = () => {
@@ -56,6 +68,8 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
     draft.title = title;
     draft.description = desc;
     draft.steps = steps;
+    draft.image = image;
+    draft.imageUploaded = imageUploaded;
     return draft;
   };
 
@@ -82,7 +96,11 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
           cursor: "pointer",
         }}
       >
-        <Typography variant="h3" align="center">
+        <Typography
+          variant="h3"
+          align="center"
+          style={{ overflowWrap: "break-word" }}
+        >
           {title.length === 0 ? "Title" : title}
         </Typography>
       </div>
@@ -92,7 +110,12 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
   const getDescText = () => {
     return (
       <div onClick={toggleDesc} style={{ cursor: "pointer" }}>
-        <Typography variant="body1" align="center" color="#999999">
+        <Typography
+          variant="body1"
+          align="center"
+          color="#999999"
+          style={{ overflowWrap: "break-word" }}
+        >
           {desc.length === 0 ? "Description" : desc}
         </Typography>
       </div>
@@ -109,34 +132,67 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
         direction="column"
         alignItems="center"
       >
-        <div ref={ref} className="textBox">
+        <div ref={mainDiv} className="textBox">
           <Stack spacing={0.5} direction="column">
-            {image !== null ? (
-              <img
-                width={dimensions.width}
-                height={dimensions.height}
-                src={URL.createObjectURL(image)}
-                style={{ objectFit: "cover" }}
-              />
-            ) : (
-              ""
-            )}
-            <Button variant="outlined" component="label">
-              ADD PHOTO
-              <input
-                type="file"
-                hidden
-                onChange={(event) => {
-                  if (event.target.files) setImage(event.target.files[0]);
-                }}
-              />
-            </Button>
-            {titleOnEdit
-              ? getTextField("Title", title, toggleTitle, setTitle, false)
-              : getTitleText()}
-            {descOnEdit
-              ? getTextField("Description", desc, toggleDesc, setDesc, true)
-              : getDescText()}
+            <Grid container width="100vw" direction="row">
+              <Grid
+                container
+                width={dimensions.width / 2}
+                height={dimensions.width / 2}
+                direction="column"
+                justifyContent="center"
+              >
+                <Grid item width={dimensions.width / 2} zeroMinWidth>
+                  {titleOnEdit
+                    ? getTextField("Title", title, toggleTitle, setTitle, false)
+                    : getTitleText()}
+                </Grid>
+                <Grid item width={dimensions.width / 2} zeroMinWidth>
+                  {descOnEdit
+                    ? getTextField(
+                        "Description",
+                        desc,
+                        toggleDesc,
+                        setDesc,
+                        true
+                      )
+                    : getDescText()}
+                </Grid>
+              </Grid>
+              <Grid
+                container
+                width={dimensions.width / 2}
+                direction="column"
+                justifyContent="center"
+              >
+                {imagePath !== null ? (
+                  <img
+                    width={dimensions.width / 2}
+                    height={dimensions.width / 2}
+                    src={imagePath}
+                    style={{ objectFit: "cover" }}
+                  />
+                ) : (
+                  <Button variant="outlined" component="label">
+                    ADD PHOTO
+                    <input
+                      type="file"
+                      hidden
+                      onChange={(event) => {
+                        if (event.target.files) {
+                          setImage(event.target.files[0]);
+                          setImagePath(
+                            URL.createObjectURL(event.target.files[0])
+                          );
+                          setImageUploaded(false);
+                        }
+                      }}
+                    />
+                  </Button>
+                )}
+              </Grid>
+            </Grid>
+
             <Typography variant="h5">Recipe</Typography>
             {steps.map((step, index) => (
               <TextField

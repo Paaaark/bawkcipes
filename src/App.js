@@ -6,7 +6,7 @@ import AddFragment from "./components/AddFragment";
 import { ThemeProvider } from "@mui/material/styles";
 import myTheme from "./myTheme";
 import EditingDraft from "./components/EditingDraft";
-import db from "./firebase";
+import db, { storage } from "./firebase";
 import {
   getDocs,
   collection,
@@ -14,9 +14,10 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
 import MainFragment from "./components/MainFragment";
 import RecipeFragment from "./components/RecipeFragment";
-import { generateId } from "./Backend";
+import { generateId, generateImageId } from "./Backend";
 
 const App = () => {
   React.useEffect(() => {
@@ -28,7 +29,7 @@ const App = () => {
     const snapshot = await getDocs(collection(db, "drafts"));
     const drafts = snapshot.docs.map((doc) => {
       const data = doc.data();
-      data.key = doc.id;
+      data.id = doc.id;
       return data;
     });
     setDrafts(drafts);
@@ -93,6 +94,18 @@ const App = () => {
 
   const saveDraft = (newDraft) => {
     setFragmentStatus("add");
+    if (newDraft.image !== null && !newDraft.imageUploaded) {
+      const imageId = generateImageId();
+      const storageRef = ref(storage, imageId);
+      const imageFile = newDraft.image;
+      uploadBytes(storageRef, imageFile);
+      newDraft.imagePath = storageRef.fullPath;
+      newDraft.imageUploaded = true;
+      newDraft.image = "";
+    } else {
+      newDraft.image = "";
+    }
+
     setDrafts(
       drafts.map((oldDraft) =>
         oldDraft.id === newDraft.id ? newDraft : oldDraft
@@ -101,7 +114,14 @@ const App = () => {
     if (!drafts.find((oldDraft) => oldDraft.id === newDraft.id)) {
       setDrafts([...drafts, newDraft]);
     }
+    console.log(newDraft);
     uploadDraftToDatabase(newDraft);
+  };
+
+  const deleteDraft = (newDraft) => {
+    setFragmentStatus("add");
+    setDrafts(drafts.filter((draft) => draft.id !== newDraft.id));
+    deleteDraftFromDatabase(newDraft);
   };
 
   const uploadDraft = (newDraft) => {
@@ -130,7 +150,12 @@ const App = () => {
     switch (fragmentStatus) {
       case "add":
         return (
-          <AddFragment drafts={drafts} onEdit={editDraft} onCreate={onCreate} />
+          <AddFragment
+            drafts={drafts}
+            onEdit={editDraft}
+            onCreate={onCreate}
+            onDelete={deleteDraft}
+          />
         );
       case "edit":
         return (

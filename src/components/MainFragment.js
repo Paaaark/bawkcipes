@@ -12,8 +12,12 @@ const MainFragment = ({ recipes, expandRecipe }) => {
       paddingTop="10px"
       paddingLeft="10px"
     >
-      {recipes.map((recipe) => (
-        <RecipeCard recipe={recipe} expandRecipe={() => expandRecipe(recipe)} />
+      {recipes.map((recipe, index) => (
+        <RecipeCard
+          key={index}
+          recipe={recipe}
+          expandRecipe={() => expandRecipe(recipe)}
+        />
       ))}
     </Grid>
   );

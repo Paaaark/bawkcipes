@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
@@ -12,9 +13,24 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase";
 
 function DraftCard({ draft, onEdit, onDelete }) {
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [imagePath, setImagePath] = useState(null);
+
+  useEffect(() => {
+    if (draft.imageUploaded) {
+      getDownloadURL(ref(storage, draft.imagePath)).then((url) => {
+        setImagePath(url);
+      });
+    } else {
+      getDownloadURL(ref(storage, "defaultFoodImage")).then((url) => {
+        setImagePath(url);
+      });
+    }
+  }, []);
 
   return (
     <Card
@@ -27,16 +43,16 @@ function DraftCard({ draft, onEdit, onDelete }) {
     >
       <CardMedia
         component="img"
-        height="140"
-        image="/static/images/cards/contemplative-reptile.jpg"
-        alt="green iguana"
+        height="200"
+        image={imagePath ? imagePath : null}
+        alt={draft.title}
       />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
           {draft.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {draft.desc}
+          {draft.description}
         </Typography>
       </CardContent>
       <CardActions>

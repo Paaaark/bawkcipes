@@ -4,10 +4,25 @@ import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase";
+import { useState, useEffect } from "react";
 
 function RecipeCard({ recipe, expandRecipe }) {
   const [cardColor, setCardColor] = useState("#ffffff");
+  const [imagePath, setImagePath] = useState(null);
+
+  useEffect(() => {
+    if (recipe.imageUploaded) {
+      getDownloadURL(ref(storage, recipe.imagePath)).then((url) => {
+        setImagePath(url);
+      });
+    } else {
+      getDownloadURL(ref(storage, "defaultFoodImage.png")).then((url) => {
+        setImagePath(url);
+      });
+    }
+  }, []);
 
   const onMouseOver = () => {
     setCardColor("#C9C9C9");
@@ -25,9 +40,9 @@ function RecipeCard({ recipe, expandRecipe }) {
     >
       <CardMedia
         component="img"
-        height="140"
-        image="/static/images/cards/contemplative-reptile.jpg"
-        alt="green iguana"
+        height="300"
+        image={imagePath}
+        alt={recipe.title}
       />
       <CardContent style={{ backgroundColor: cardColor }}>
         <Typography gutterBottom variant="h5" component="div">

@@ -16,6 +16,18 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
   const [title, setTitle] = useState(draft.title);
   const [desc, setDesc] = useState(draft.description);
   const [steps, setSteps] = useState(draft.steps);
+  const [ingredients, setIngredients] = useState(
+    draft.ingredients ? draft.ingredients : []
+  );
+  const [amounts, setAmounts] = useState(draft.amounts ? draft.amounts : []);
+  const [ingredientsToggle, setIngredientsToggle] = useState(
+    //[Array(draft.ingredients.length).fill(false)]
+    []
+  );
+  const [amountsToggle, setAmountsToggle] = useState(
+    //Array(draft.amounts.length).fill(false)
+    []
+  );
   const [image, setImage] = useState(null);
   const [imagePath, setImagePath] = useState(
     draft.imagePath ? draft.imagePath : null
@@ -56,6 +68,13 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
     setSteps([...steps, ""]);
   };
 
+  const onAddIngredient = () => {
+    setIngredients([...ingredients, ""]);
+    setIngredientsToggle([...ingredientsToggle, true]);
+    setAmounts([...amounts, ""]);
+    setAmountsToggle([...amountsToggle, true]);
+  };
+
   const toggleTitle = (e) => {
     setTitleOnEdit(!titleOnEdit);
   };
@@ -64,12 +83,100 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
     setDescOnEdit(!descOnEdit);
   };
 
+  const showIngredients = (e) => {
+    return ingredients.map((ingredient, index) => {
+      return (
+        <Grid
+          key={"Ingredients" + index}
+          container
+          direction="row"
+          justifyContent="flex-start"
+        >
+          <Grid item xs>
+            {ingredientsToggle[index] ? (
+              <TextField
+                label="Ingredient"
+                defaultValue={ingredient}
+                variant="standard"
+                onBlur={() =>
+                  setIngredientsToggle(
+                    ingredientsToggle.map((entry, i) =>
+                      i === index ? !entry : entry
+                    )
+                  )
+                }
+                onChange={(event) => {
+                  setIngredients(
+                    ingredients.map((entry, i) =>
+                      i === index ? event.target.value : entry
+                    )
+                  );
+                }}
+              />
+            ) : (
+              <Typography
+                variant="body2"
+                onClick={() =>
+                  setIngredientsToggle(
+                    ingredientsToggle.map((entry, i) =>
+                      i === index ? !entry : entry
+                    )
+                  )
+                }
+              >
+                {ingredient}
+              </Typography>
+            )}
+          </Grid>
+          <Grid item xs>
+            {amountsToggle[index] ? (
+              <TextField
+                label="Amount"
+                defaultValue={amounts[index]}
+                variant="standard"
+                onBlur={() =>
+                  setAmountsToggle(
+                    amountsToggle.map((entry, i) =>
+                      i === index ? !entry : entry
+                    )
+                  )
+                }
+                onChange={(event) => {
+                  setAmounts(
+                    amounts.map((entry, i) =>
+                      i === index ? event.target.value : entry
+                    )
+                  );
+                }}
+              />
+            ) : (
+              <Typography
+                variant="body2"
+                onClick={() =>
+                  setAmountsToggle(
+                    amountsToggle.map((entry, i) =>
+                      i === index ? !entry : entry
+                    )
+                  )
+                }
+              >
+                {amounts[index]}
+              </Typography>
+            )}
+          </Grid>
+        </Grid>
+      );
+    });
+  };
+
   const getDraft = (e) => {
     draft.title = title;
     draft.description = desc;
     draft.steps = steps;
     draft.image = image;
     draft.imageUploaded = imageUploaded;
+    draft.ingredients = ingredients;
+    draft.amounts = amounts;
     return draft;
   };
 
@@ -135,6 +242,7 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
         <div ref={mainDiv} className="textBox">
           <Stack spacing={0.5} direction="column">
             <Grid container width="100vw" direction="row">
+              {/* Start: Recipe metadata */}
               <Grid
                 container
                 width={dimensions.width / 2}
@@ -192,7 +300,20 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
                 )}
               </Grid>
             </Grid>
-
+            {/* End: Recipe metadata */}
+            {/* Start: Ingredient section */}
+            <Typography variant="h5">Ingredients</Typography>
+            {showIngredients()}
+            <Button
+              color="secondary"
+              variant="outlined"
+              onClick={onAddIngredient}
+            >
+              Add an ingredient
+            </Button>
+            {/* End: Ingredient section */}
+            <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
+            {/* Start: Recipe section */}
             <Typography variant="h5">Recipe</Typography>
             {steps.map((step, index) => (
               <TextField
@@ -210,9 +331,11 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
               />
             ))}
             <Button color="secondary" variant="outlined" onClick={onAddSteps}>
-              Add Steps
+              Add a step
             </Button>
+            {/* End: Recipe section */}
             <Divider style={{ marginTop: "10px", marginBottom: "10px" }} />
+            {/* Start: Save buttons */}
             <Grid container spacing={1.5} direction="row">
               <Grid item xs>
                 <Button
@@ -235,6 +358,7 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
                 </Button>
               </Grid>
             </Grid>
+            {/* End: Save buttons */}
           </Stack>
         </div>
       </Grid>

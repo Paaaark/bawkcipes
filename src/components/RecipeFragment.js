@@ -2,11 +2,8 @@ import React from "react";
 import { Button, Grid } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useState } from "react";
+import DraftCard from "./DraftCard";
 
 const RecipeFragment = ({ recipe }) => {
   const [openRecipe, setOpenRecipe] = useState(false);
@@ -29,6 +26,26 @@ const RecipeFragment = ({ recipe }) => {
           <Typography marginTop="5px" align="center" variant="body1">
             {recipe.description}
           </Typography>
+
+          {/* Start: Ingredients section */}
+          <Typography variant="h5">Ingredients</Typography>
+          {recipe.ingredients.map((ingredient, index) => (
+            <div key={index}>
+              <Grid container direction="row" justifyContent="flex-start">
+                <Grid item xs>
+                  <Typography variant="body1">
+                    {recipe.ingredients[index]}
+                  </Typography>
+                </Grid>
+                <Grid item xs>
+                  <Typography variant="body1">
+                    {recipe.amounts[index]}
+                  </Typography>
+                </Grid>
+              </Grid>
+            </div>
+          ))}
+          {/* End: Ingredients section */}
 
           {openRecipe
             ? recipe.steps.map((step, index) => (

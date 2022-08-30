@@ -2,11 +2,30 @@ import React from "react";
 import { Button, Grid } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import DraftCard from "./DraftCard";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase";
 
 const RecipeFragment = ({ recipe }) => {
   const [openRecipe, setOpenRecipe] = useState(false);
+  const [imagePath, setImagePath] = useState(null);
+
+  recipe.ingredients = recipe.ingredients ? recipe.ingredients : [];
+  recipe.amounts = recipe.amounts ? recipe.amounts : [];
+  recipe.steps = recipe.steps ? recipe.steps : [];
+
+  useEffect(() => {
+    if (recipe.imageUploaded) {
+      getDownloadURL(ref(storage, recipe.imagePath)).then((url) => {
+        setImagePath(url);
+      });
+    } else {
+      getDownloadURL(ref(storage, "defaultFoodImage.png")).then((url) => {
+        setImagePath(url);
+      });
+    }
+  }, []);
 
   return (
     <Grid container direction="column" alignItems="center" paddingTop="10px">
@@ -20,12 +39,40 @@ const RecipeFragment = ({ recipe }) => {
       >
         <div className="textBox">
           <Stack direction="column"></Stack>
-          <Typography align="center" variant="h3">
-            {recipe.title}
-          </Typography>
-          <Typography marginTop="5px" align="center" variant="body1">
-            {recipe.description}
-          </Typography>
+
+          {/* Start: Recipe metadata */}
+          <Grid container width="100vw" direction="row">
+            <Grid
+              container
+              width="45%"
+              direction="column"
+              justifyContent="center"
+            >
+              <Grid item zeroMinWidth>
+                <Typography variant="h3">{recipe.title}</Typography>
+              </Grid>
+              <Grid item zeroMinWidth>
+                <Typography variant="body1">{recipe.description}</Typography>
+              </Grid>
+            </Grid>
+            <Grid
+              container
+              width="45%"
+              direction="column"
+              justifyContent="center"
+            >
+              {imagePath !== null ? (
+                <img
+                  width="100%"
+                  src={imagePath}
+                  style={{ objectFit: "cover" }}
+                />
+              ) : (
+                ""
+              )}
+            </Grid>
+          </Grid>
+          {/* End: Recipe metadata */}
 
           {/* Start: Ingredients section */}
           <Typography variant="h5">Ingredients</Typography>
@@ -47,14 +94,20 @@ const RecipeFragment = ({ recipe }) => {
           ))}
           {/* End: Ingredients section */}
 
-          {openRecipe
-            ? recipe.steps.map((step, index) => (
+          {openRecipe ? (
+            recipe.steps.length !== 0 ? (
+              recipe.steps.map((step, index) => (
                 <div key={index}>
                   <Typography variant="h5">{"Step " + (index + 1)}</Typography>
                   <Typography variant="body1">{step}</Typography>
                 </div>
               ))
-            : ""}
+            ) : (
+              <Typography variant="body1">Recipe not available.</Typography>
+            )
+          ) : (
+            ""
+          )}
         </div>
         <Button
           variant="text"
@@ -67,5 +120,4 @@ const RecipeFragment = ({ recipe }) => {
     </Grid>
   );
 };
-
 export default RecipeFragment;

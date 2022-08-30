@@ -37,7 +37,7 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
   );
   const [titleOnEdit, setTitleOnEdit] = useState(false);
   const [descOnEdit, setDescOnEdit] = useState(false);
-  const [dimensions, setDimensions] = React.useState({
+  const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
   });

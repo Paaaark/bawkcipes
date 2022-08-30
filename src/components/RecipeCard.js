@@ -8,7 +8,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
 import { useState, useEffect } from "react";
 
-function RecipeCard({ recipe, expandRecipe }) {
+function RecipeCard({ width, recipe, expandRecipe }) {
   const [cardColor, setCardColor] = useState("#ffffff");
   const [imagePath, setImagePath] = useState(null);
 
@@ -33,7 +33,7 @@ function RecipeCard({ recipe, expandRecipe }) {
 
   return (
     <Card
-      sx={{ width: 345 }}
+      sx={{ width: { width } }}
       onMouseOver={onMouseOver}
       onMouseOut={onMouseOut}
       onClick={expandRecipe}

@@ -18,6 +18,7 @@ import { ref, uploadBytes } from "firebase/storage";
 import MainFragment from "./components/MainFragment";
 import RecipeFragment from "./components/RecipeFragment";
 import { generateId, generateImageId } from "./Backend";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 const App = () => {
   React.useEffect(() => {
@@ -175,16 +176,43 @@ const App = () => {
 
   return (
     <ThemeProvider theme={myTheme}>
-      <TopAppBar title={getTopBarStatus()} toMain={toMain} toAdd={toAdd} />
-      {fragmentStatus === "main" ? (
-        <div onClick={toAdd}>
-          <FloatingActionButton />
-        </div>
-      ) : (
-        ""
-      )}
-
-      {renderMainFragment()}
+      <Router>
+        <TopAppBar title={getTopBarStatus()} toMain={toMain} toAdd={toAdd} />
+        <Routes>
+          <Route
+            path="/editingDraft"
+            element={
+              <EditingDraft
+                draft={currentEditingDraft}
+                onSaveDraft={saveDraft}
+                uploadDraft={uploadDraft}
+              />
+            }
+          />
+          <Route
+            path="/addDraft"
+            element={
+              <AddFragment
+                drafts={drafts}
+                onEdit={editDraft}
+                onCreate={onCreate}
+                onDelete={deleteDraft}
+              />
+            }
+          />
+          <Route
+            path="/"
+            element={
+              <div>
+                <MainFragment recipes={recipes} expandRecipe={expandRecipe} />
+                <Link to="addDraft">
+                  <FloatingActionButton />
+                </Link>
+              </div>
+            }
+          />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 };

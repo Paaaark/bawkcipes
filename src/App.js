@@ -177,7 +177,7 @@ const App = () => {
   return (
     <ThemeProvider theme={myTheme}>
       <Router>
-        <TopAppBar title={getTopBarStatus()} toMain={toMain} toAdd={toAdd} />
+        <TopAppBar />
         <Routes>
           <Route
             path="/editingDraft"
@@ -210,6 +210,10 @@ const App = () => {
                 </Link>
               </div>
             }
+          />
+          <Route
+            path="recipe/:id"
+            element={<RecipeFragment recipes={recipes} />}
           />
         </Routes>
       </Router>

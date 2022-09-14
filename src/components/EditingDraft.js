@@ -98,13 +98,22 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
                 label="Ingredient"
                 defaultValue={ingredient}
                 variant="standard"
-                onBlur={() =>
+                onBlur={(event) => {
                   setIngredientsToggle(
                     ingredientsToggle.map((entry, i) =>
                       i === index ? !entry : entry
                     )
-                  )
-                }
+                  );
+                  setIngredients(
+                    ingredients.map((entry, i) =>
+                      i === index
+                        ? event.target.value === ""
+                          ? "Ingredient"
+                          : entry
+                        : entry
+                    )
+                  );
+                }}
                 onChange={(event) => {
                   setIngredients(
                     ingredients.map((entry, i) =>
@@ -134,13 +143,22 @@ const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
                 label="Amount"
                 defaultValue={amounts[index]}
                 variant="standard"
-                onBlur={() =>
+                onBlur={(event) => {
                   setAmountsToggle(
                     amountsToggle.map((entry, i) =>
                       i === index ? !entry : entry
                     )
-                  )
-                }
+                  );
+                  setAmounts(
+                    amounts.map((entry, i) =>
+                      i === index
+                        ? event.target.value === ""
+                          ? "Amount"
+                          : entry
+                        : entry
+                    )
+                  );
+                }}
                 onChange={(event) => {
                   setAmounts(
                     amounts.map((entry, i) =>

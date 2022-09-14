@@ -12,6 +12,11 @@ body {
   margin: 0px, 0px, 0px, 0px;
 }
 
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
 .title-text-field {
   width: 50vw;
 }

@@ -8,30 +8,46 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PetsIcon from "@mui/icons-material/Pets";
 import myTheme from "../myTheme";
+import { Link, useLocation } from "react-router-dom";
 
-const TopAppBar = ({ title, toMain, toAdd }) => {
+const TopAppBar = () => {
+  const location = useLocation();
   const color =
-    title === "Bawkcipes"
+    location.pathname === "/"
       ? myTheme.palette.primary.main
       : myTheme.palette.black;
-  console.log(title);
-  console.log(color);
+
+  const location_to_title = (location) => {
+    switch (location.pathname) {
+      case "/addDraft":
+        return "Drafts";
+      case "/editingDraft":
+        return "Editing Draft";
+      case "/":
+      default:
+        return "Bawkcipes";
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="sticky" style={{ background: color }}>
         <Toolbar>
-          {title !== "Bawkcipes" ? (
-            <IconButton
-              size="large"
-              edge="start"
+          {location.pathname !== "/" ? (
+            <Link
+              to={location.pathname === "/editingDraft" ? "/addDraft" : "/"}
               color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-              onClick={title === "Editing Recipe" ? toAdd : toMain}
             >
-              <ArrowBackIcon />
-            </IconButton>
+              <IconButton
+                size="large"
+                edge="start"
+                color="inherit"
+                aria-label="menu"
+                sx={{ mr: 2 }}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            </Link>
           ) : (
             <PetsIcon
               size="large"
@@ -43,7 +59,7 @@ const TopAppBar = ({ title, toMain, toAdd }) => {
           )}
 
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            {title}
+            {location_to_title(location)}
           </Typography>
           <Button color="inherit">Login</Button>
         </Toolbar>

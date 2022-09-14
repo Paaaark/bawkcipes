@@ -6,10 +6,17 @@ import { useState, useEffect } from "react";
 import DraftCard from "./DraftCard";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
+import { useParams } from "react-router-dom";
 
-const RecipeFragment = ({ recipe }) => {
+const RecipeFragment = ({ recipes }) => {
   const [openRecipe, setOpenRecipe] = useState(false);
   const [imagePath, setImagePath] = useState(null);
+
+  let { id } = useParams();
+  let recipe = null;
+  for (const value of Object.values(recipes)) {
+    if (value.title === id) recipe = value;
+  }
 
   recipe.ingredients = recipe.ingredients ? recipe.ingredients : [];
   recipe.amounts = recipe.amounts ? recipe.amounts : [];
@@ -41,10 +48,10 @@ const RecipeFragment = ({ recipe }) => {
           <Stack direction="column"></Stack>
 
           {/* Start: Recipe metadata */}
-          <Grid container width="100vw" direction="row">
+          <Grid container width="100%" direction="row">
             <Grid
               container
-              width="45%"
+              width="50%"
               direction="column"
               justifyContent="center"
             >
@@ -57,7 +64,7 @@ const RecipeFragment = ({ recipe }) => {
             </Grid>
             <Grid
               container
-              width="45%"
+              width="50%"
               direction="column"
               justifyContent="center"
             >

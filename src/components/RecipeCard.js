@@ -7,6 +7,7 @@ import Typography from "@mui/material/Typography";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 function RecipeCard({ width, recipe, expandRecipe }) {
   const [cardColor, setCardColor] = useState("#ffffff");
@@ -32,28 +33,30 @@ function RecipeCard({ width, recipe, expandRecipe }) {
   };
 
   return (
-    <Card
-      sx={{ width: { width } }}
-      onMouseOver={onMouseOver}
-      onMouseOut={onMouseOut}
-      onClick={expandRecipe}
-    >
-      <CardMedia
-        component="img"
-        height="300"
-        image={imagePath}
-        alt={recipe.title}
-      />
-      <CardContent style={{ backgroundColor: cardColor }}>
-        <Typography gutterBottom variant="h5" component="div">
-          {recipe.title}
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {recipe.description}
-        </Typography>
-      </CardContent>
-      <CardActions style={{ backgroundColor: cardColor }}></CardActions>
-    </Card>
+    <Link to={"/recipe/" + recipe.title}>
+      <Card
+        sx={{ width: { width } }}
+        onMouseOver={onMouseOver}
+        onMouseOut={onMouseOut}
+        onClick={expandRecipe}
+      >
+        <CardMedia
+          component="img"
+          height="300"
+          image={imagePath}
+          alt={recipe.title}
+        />
+        <CardContent style={{ backgroundColor: cardColor }}>
+          <Typography gutterBottom variant="h5" component="div">
+            {recipe.title}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {recipe.description}
+          </Typography>
+        </CardContent>
+        <CardActions style={{ backgroundColor: cardColor }}></CardActions>
+      </Card>
+    </Link>
   );
 }
 

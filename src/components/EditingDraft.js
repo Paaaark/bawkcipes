@@ -9,8 +9,15 @@ import Typography from "@mui/material/Typography";
 import styles from "../styles.css";
 import { storage } from "../firebase";
 import { getDownloadURL, ref } from "firebase/storage";
+import { useParams } from "react-router-dom";
 
-const EditingDraft = ({ draft, onSaveDraft, uploadDraft }) => {
+const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
+  let { id } = useParams();
+  let draft = null;
+  for (const value of Object.values(drafts)) {
+    if (value.id === id) draft = value;
+  }
+
   if (!("steps" in draft)) draft.steps = [];
   const mainDiv = useRef(null);
   const [title, setTitle] = useState(draft.title);

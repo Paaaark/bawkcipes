@@ -5,24 +5,40 @@ import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
 import DraftCard from "./DraftCard";
 import { ref, getDownloadURL } from "firebase/storage";
-import { storage } from "../firebase";
+import db, { storage } from "../firebase";
 import { useParams } from "react-router-dom";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const RecipeFragment = ({ recipes }) => {
   const [openRecipe, setOpenRecipe] = useState(false);
   const [imagePath, setImagePath] = useState(null);
-
+  const [recipe, setRecipe] = useState(null);
   let { id } = useParams();
-  let recipe = null;
-  for (const value of Object.values(recipes)) {
-    if (value.title === id) recipe = value;
-  }
-
-  recipe.ingredients = recipe.ingredients ? recipe.ingredients : [];
-  recipe.amounts = recipe.amounts ? recipe.amounts : [];
-  recipe.steps = recipe.steps ? recipe.steps : [];
 
   useEffect(() => {
+    for (const value of Object.values(recipes)) {
+      if (value.title === id) setRecipe(value);
+    }
+    if (recipe === null) {
+      queryRecipe();
+    }
+  }, []);
+
+  useEffect(() => {
+    processRecipe();
+  }, [recipe]);
+
+  async function queryRecipe() {
+    const q = query(collection(db, "recipes"), where("title", "==", id));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setRecipe(doc.data());
+      console.log(doc.data());
+    });
+  }
+
+  const processRecipe = () => {
+    if (recipe === null) return;
     if (recipe.imageUploaded) {
       getDownloadURL(ref(storage, recipe.imagePath)).then((url) => {
         setImagePath(url);
@@ -32,9 +48,14 @@ const RecipeFragment = ({ recipes }) => {
         setImagePath(url);
       });
     }
-  }, []);
+    recipe.ingredients = recipe.ingredients ? recipe.ingredients : [];
+    recipe.amounts = recipe.amounts ? recipe.amounts : [];
+    recipe.steps = recipe.steps ? recipe.steps : [];
+  };
 
-  return (
+  return recipe == null ? (
+    <p>Loading</p>
+  ) : (
     <Grid container direction="column" alignItems="center" paddingTop="10px">
       <Grid
         container
@@ -56,10 +77,14 @@ const RecipeFragment = ({ recipes }) => {
               justifyContent="center"
             >
               <Grid item zeroMinWidth>
-                <Typography variant="h3">{recipe.title}</Typography>
+                <Typography variant="h3" align="center">
+                  {recipe.title}
+                </Typography>
               </Grid>
               <Grid item zeroMinWidth>
-                <Typography variant="body1">{recipe.description}</Typography>
+                <Typography variant="body1" align="center">
+                  {recipe.description}
+                </Typography>
               </Grid>
             </Grid>
             <Grid

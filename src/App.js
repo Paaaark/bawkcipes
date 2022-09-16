@@ -34,7 +34,6 @@ const App = () => {
       return data;
     });
     setDrafts(drafts);
-    console.log(drafts);
   }
 
   async function uploadDraftToDatabase(draft) {
@@ -194,7 +193,6 @@ const App = () => {
             element={
               <AddFragment
                 drafts={drafts}
-                onEdit={editDraft}
                 onCreate={onCreate}
                 onDelete={deleteDraft}
               />
@@ -212,8 +210,18 @@ const App = () => {
             }
           />
           <Route
-            path="recipe/:id"
+            path="/recipe/:id"
             element={<RecipeFragment recipes={recipes} />}
+          />
+          <Route
+            path="/draft/:id"
+            element={
+              <EditingDraft
+                drafts={drafts}
+                onSaveDraft={saveDraft}
+                uploadDraft={uploadDraft}
+              />
+            }
           />
         </Routes>
       </Router>

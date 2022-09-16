@@ -15,8 +15,9 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase";
+import { Link } from "react-router-dom";
 
-function DraftCard({ draft, onEdit, onDelete }) {
+function DraftCard({ draft, onDelete }) {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [imagePath, setImagePath] = useState(null);
 
@@ -58,9 +59,11 @@ function DraftCard({ draft, onEdit, onDelete }) {
       <CardActions>
         <Grid container spacing={1} direction="row">
           <Grid item xs align="center">
-            <IconButton size="medium" onClick={(event) => onEdit(draft)}>
-              <EditIcon />
-            </IconButton>
+            <Link to={"/draft/" + draft.id}>
+              <IconButton size="medium">
+                <EditIcon />
+              </IconButton>
+            </Link>
           </Grid>
           <Grid item xs align="center">
             <IconButton size="medium" onClick={(event) => setOpenDialog(true)}>

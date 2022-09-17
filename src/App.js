@@ -64,23 +64,11 @@ const App = () => {
   const [recipes, setRecipes] = useState([
     { title: "Manual", description: "Manual" },
   ]);
-
-  const toAdd = () => {
-    setFragmentStatus("add");
-  };
-
-  const toMain = () => {
-    setFragmentStatus("main");
-  };
+  const [keyword, setKeyword] = useState("");
 
   const expandRecipe = (recipe) => {
     setFragmentStatus("recipe");
     setViewingRecipe(recipe);
-  };
-
-  const editDraft = (draft) => {
-    setFragmentStatus("edit");
-    setCurrentEditingDraft(draft);
   };
 
   const onCreate = () => {
@@ -132,51 +120,15 @@ const App = () => {
     uploadRecipeToDatabase(newDraft);
   };
 
-  const getTopBarStatus = () => {
-    switch (fragmentStatus) {
-      case "add":
-        return "Saved Drafts";
-      case "edit":
-        return "Editing Recipe";
-      case "recipe":
-        return viewingRecipe.title;
-      case "main":
-      default:
-        return "Bawkcipes";
-    }
-  };
-
-  const renderMainFragment = () => {
-    switch (fragmentStatus) {
-      case "add":
-        return (
-          <AddFragment
-            drafts={drafts}
-            onEdit={editDraft}
-            onCreate={onCreate}
-            onDelete={deleteDraft}
-          />
-        );
-      case "edit":
-        return (
-          <EditingDraft
-            draft={currentEditingDraft}
-            onSaveDraft={saveDraft}
-            uploadDraft={uploadDraft}
-          />
-        );
-      case "recipe":
-        return <RecipeFragment recipe={viewingRecipe} />;
-      case "main":
-      default:
-        return <MainFragment recipes={recipes} expandRecipe={expandRecipe} />;
-    }
+  const searchRecipe = (newKeyword) => {
+    setKeyword(newKeyword);
+    console.log("searched word is " + newKeyword);
   };
 
   return (
     <ThemeProvider theme={myTheme}>
       <Router>
-        <TopAppBar />
+        <TopAppBar searchRecipe={searchRecipe} />
         <Routes>
           <Route
             path="/editingDraft"
@@ -202,7 +154,11 @@ const App = () => {
             path="/"
             element={
               <div>
-                <MainFragment recipes={recipes} expandRecipe={expandRecipe} />
+                <MainFragment
+                  recipes={recipes}
+                  expandRecipe={expandRecipe}
+                  keyword={keyword}
+                />
                 <Link to="addDraft">
                   <FloatingActionButton />
                 </Link>

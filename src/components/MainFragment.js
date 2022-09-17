@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import RecipeCard from "./RecipeCard";
 import { Grid } from "@mui/material";
 
-const MainFragment = ({ recipes, expandRecipe }) => {
+const MainFragment = ({ recipes, expandRecipe, keyword }) => {
   const [width, setWidth] = useState(window.innerWidth);
   const [height, setHeight] = useState(window.innerHeight);
+  const [filteredRecipes, setFilteredRecipes] = useState(recipes);
 
   const handleResize = () => {
     setWidth(window.innerWidth);
@@ -17,6 +18,18 @@ const MainFragment = ({ recipes, expandRecipe }) => {
     window.addEventListener("resize", handleResize);
   }, []);
 
+  useEffect(() => {
+    setFilteredRecipes(recipes);
+  }, [recipes]);
+
+  useEffect(() => {
+    setFilteredRecipes(
+      recipes.filter((recipe) =>
+        recipe.title.toLowerCase().includes(keyword.toLowerCase())
+      )
+    );
+  }, [keyword]);
+
   return (
     <Grid
       container
@@ -27,7 +40,7 @@ const MainFragment = ({ recipes, expandRecipe }) => {
       paddingLeft="10px"
       paddingRight="10px"
     >
-      {recipes.map((recipe, index) => (
+      {filteredRecipes.map((recipe, index) => (
         <Grid item xs>
           <RecipeCard
             key={index}

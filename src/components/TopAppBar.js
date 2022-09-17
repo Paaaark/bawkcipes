@@ -7,10 +7,12 @@ import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import PetsIcon from "@mui/icons-material/Pets";
+import InputBase from "@mui/material/InputBase";
+import SearchIcon from "@mui/icons-material/Search";
 import myTheme from "../myTheme";
 import { Link, useLocation } from "react-router-dom";
 
-const TopAppBar = () => {
+const TopAppBar = ({ searchRecipe }) => {
   const location = useLocation();
   const color =
     location.pathname === "/"
@@ -58,9 +60,34 @@ const TopAppBar = () => {
             />
           )}
 
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+          <Typography variant="h6" component="div" sx={{ mr: "1%" }}>
             {location_to_title(location)}
           </Typography>
+
+          {location.pathname === "/" ? (
+            <div
+              style={{
+                flexGrow: 1,
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
+              <InputBase
+                placeholder="Search..."
+                sx={{
+                  input: { color: "white" },
+                  placeholder: { padding: 0 },
+                }}
+                onChange={(event) => searchRecipe(event.target.value)}
+              />
+              <div>
+                <SearchIcon style={{ marginRight: "1%" }} />
+              </div>
+            </div>
+          ) : (
+            ""
+          )}
+
           <Button color="inherit">Login</Button>
         </Toolbar>
       </AppBar>

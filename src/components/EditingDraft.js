@@ -1,5 +1,4 @@
-import React, { useEffect, useRef } from "react";
-import { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { Stack } from "@mui/system";
@@ -7,47 +6,70 @@ import { Button } from "@mui/material";
 import Divider from "@mui/material/Divider";
 import Typography from "@mui/material/Typography";
 import styles from "../styles.css";
-import { storage } from "../firebase";
+import db, { storage } from "../firebase";
 import { getDownloadURL, ref } from "firebase/storage";
 import { useParams } from "react-router-dom";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
   let { id } = useParams();
-  let draft = null;
-  for (const value of Object.values(drafts)) {
-    if (value.id === id) draft = value;
-  }
-
-  if (!("steps" in draft)) draft.steps = [];
   const mainDiv = useRef(null);
-  const [title, setTitle] = useState(draft.title);
-  const [desc, setDesc] = useState(draft.description);
-  const [steps, setSteps] = useState(draft.steps);
-  const [ingredients, setIngredients] = useState(
-    draft.ingredients ? draft.ingredients : []
-  );
-  const [amounts, setAmounts] = useState(draft.amounts ? draft.amounts : []);
-  const [ingredientsToggle, setIngredientsToggle] = useState(
-    //[Array(draft.ingredients.length).fill(false)]
-    []
-  );
-  const [amountsToggle, setAmountsToggle] = useState(
-    //Array(draft.amounts.length).fill(false)
-    []
-  );
+  const [draft, setDraft] = useState(null);
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [steps, setSteps] = useState([]);
+  const [ingredients, setIngredients] = useState([]);
+  const [amounts, setAmounts] = useState([]);
+  const [ingredientsToggle, setIngredientsToggle] = useState([]);
+  const [amountsToggle, setAmountsToggle] = useState([]);
   const [image, setImage] = useState(null);
-  const [imagePath, setImagePath] = useState(
-    draft.imagePath ? draft.imagePath : null
-  );
-  const [imageUploaded, setImageUploaded] = useState(
-    draft.imageUploaded ? draft.imageUploaded : false
-  );
+  const [imagePath, setImagePath] = useState(null);
+  const [imageUploaded, setImageUploaded] = useState(false);
   const [titleOnEdit, setTitleOnEdit] = useState(false);
   const [descOnEdit, setDescOnEdit] = useState(false);
   const [dimensions, setDimensions] = useState({
     width: 0,
     height: 0,
   });
+
+  useEffect(() => {
+    for (const value of Object.values(drafts)) {
+      if (value.id === id) setDraft(value);
+    }
+    if (draft === null) {
+      queryDraft();
+    }
+    setDimensions({
+      width: mainDiv.current.offsetWidth,
+      height: Math.floor(mainDiv.current.offsetWidth / 16),
+    });
+    window.addEventListener("resize", handleResize, false);
+  }, []);
+
+  useEffect(() => {
+    if (draft === null) return;
+    if (draft.imageUploaded) {
+      getDownloadURL(ref(storage, draft.imagePath)).then((url) => {
+        setImagePath(url);
+      });
+    }
+    if (draft.steps === null) draft.steps = [];
+    if (draft.title) setTitle(draft.title);
+    if (draft.description) setDesc(draft.description);
+    if (draft.steps) setSteps(draft.steps);
+    if (draft.ingredients) setIngredients(draft.ingredients);
+    if (draft.amounts) setAmounts(draft.amounts);
+    if (draft.imagePath) setImagePath(draft.imagePath);
+    if (draft.imageUploaded) setImageUploaded(draft.imageUploaded);
+  }, [draft]);
+
+  async function queryDraft() {
+    const q = query(collection(db, "drafts"), where("id", "==", id));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      setDraft(doc.data());
+    });
+  }
 
   const handleResize = () => {
     setDimensions({
@@ -56,23 +78,6 @@ const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
     });
     console.log("Window resized");
     console.log(dimensions);
-  };
-
-  useEffect(() => {
-    setDimensions({
-      width: mainDiv.current.offsetWidth,
-      height: Math.floor(mainDiv.current.offsetWidth / 16),
-    });
-    window.addEventListener("resize", handleResize, false);
-    if (draft.imageUploaded) {
-      getDownloadURL(ref(storage, draft.imagePath)).then((url) => {
-        setImagePath(url);
-      });
-    }
-  }, []);
-
-  const onAddSteps = () => {
-    setSteps([...steps, ""]);
   };
 
   const onAddIngredient = () => {
@@ -355,7 +360,11 @@ const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
                 }
               />
             ))}
-            <Button color="secondary" variant="outlined" onClick={onAddSteps}>
+            <Button
+              color="secondary"
+              variant="outlined"
+              onClick={() => setSteps([...steps, ""])}
+            >
               Add a step
             </Button>
             {/* End: Recipe section */}

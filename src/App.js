@@ -14,7 +14,7 @@ import {
   doc,
   deleteDoc,
 } from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import MainFragment from "./components/MainFragment";
 import RecipeFragment from "./components/RecipeFragment";
 import { generateId, generateImageId } from "./Backend";
@@ -43,6 +43,18 @@ const App = () => {
   async function getRecipesFromDatabase() {
     const snapshot = await getDocs(collection(db, "recipes"));
     const recipes = snapshot.docs.map((doc) => doc.data());
+    recipes.forEach((recipe) => {
+      if (recipe.imageUploaded) {
+        getDownloadURL(ref(storage, recipe.imagePath)).then((url) => {
+          recipe.downloadedImage = url;
+        });
+      } else {
+        getDownloadURL(ref(storage, "defaultFoodImage.png")).then((url) => {
+          recipe.downloadedImage = url;
+        });
+      }
+    });
+    console.log(recipes);
     setRecipes(recipes);
   }
 
@@ -51,25 +63,19 @@ const App = () => {
   }
 
   async function uploadRecipeToDatabase(draft) {
-    await setDoc(doc(db, "recipes", draft.id), draft);
+    let updates = {};
+    Object.keys(draft).forEach((key) => {
+      if (key !== "downloadedImage") updates[key] = draft[key];
+    });
+    await setDoc(doc(db, "recipes", draft.id), updates);
   }
 
-  const [fragmentStatus, setFragmentStatus] = useState("main");
   const [currentEditingDraft, setCurrentEditingDraft] = useState();
-  const [viewingRecipe, setViewingRecipe] = useState({
-    title: "",
-    description: "",
-  });
   const [drafts, setDrafts] = useState([]);
   const [recipes, setRecipes] = useState([
     { title: "Manual", description: "Manual" },
   ]);
   const [keyword, setKeyword] = useState("");
-
-  const expandRecipe = (recipe) => {
-    setFragmentStatus("recipe");
-    setViewingRecipe(recipe);
-  };
 
   const onCreate = () => {
     setCurrentEditingDraft({
@@ -77,11 +83,9 @@ const App = () => {
       title: "",
       description: "",
     });
-    setFragmentStatus("edit");
   };
 
   const saveDraft = (newDraft) => {
-    setFragmentStatus("add");
     if (newDraft.image !== null && !newDraft.imageUploaded) {
       const imageId = generateImageId();
       const storageRef = ref(storage, imageId);
@@ -107,13 +111,11 @@ const App = () => {
   };
 
   const deleteDraft = (newDraft) => {
-    setFragmentStatus("add");
     setDrafts(drafts.filter((draft) => draft.id !== newDraft.id));
     deleteDraftFromDatabase(newDraft);
   };
 
   const uploadDraft = (newDraft) => {
-    setFragmentStatus("main");
     setDrafts(drafts.filter((draft) => draft.id !== newDraft.id));
     setRecipes([...recipes, newDraft]);
     deleteDraftFromDatabase(newDraft);
@@ -156,7 +158,6 @@ const App = () => {
               <div>
                 <MainFragment
                   recipes={recipes}
-                  expandRecipe={expandRecipe}
                   keyword={keyword}
                 />
                 <Link to="addDraft">

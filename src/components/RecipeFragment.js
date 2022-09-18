@@ -3,7 +3,6 @@ import { Button, Grid } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import { useState, useEffect } from "react";
-import DraftCard from "./DraftCard";
 import { ref, getDownloadURL } from "firebase/storage";
 import db, { storage } from "../firebase";
 import { useParams } from "react-router-dom";
@@ -39,7 +38,9 @@ const RecipeFragment = ({ recipes }) => {
 
   const processRecipe = () => {
     if (recipe === null) return;
-    if (recipe.imageUploaded) {
+    if (recipe.downloadedImage) {
+      setImagePath(recipe.downloadedImage);
+    } else if (recipe.imageUploaded) {
       getDownloadURL(ref(storage, recipe.imagePath)).then((url) => {
         setImagePath(url);
       });

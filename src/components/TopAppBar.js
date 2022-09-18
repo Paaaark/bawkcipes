@@ -60,35 +60,32 @@ const TopAppBar = ({ searchRecipe }) => {
             />
           )}
 
-          <Typography variant="h6" component="div" sx={{ mr: "1%" }}>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ mr: "1%", flexGrow: 1 }}
+          >
             {location_to_title(location)}
           </Typography>
 
-          {location.pathname === "/" ? (
-            <div
-              style={{
-                flexGrow: 1,
-                display: "flex",
-                alignItems: "center",
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <InputBase
+              placeholder="Search..."
+              sx={{
+                input: { color: "white" },
+                placeholder: { padding: 0 },
               }}
-            >
-              <InputBase
-                placeholder="Search..."
-                sx={{
-                  input: { color: "white" },
-                  placeholder: { padding: 0 },
-                }}
-                onChange={(event) => searchRecipe(event.target.value)}
-              />
-              <div>
-                <SearchIcon style={{ marginRight: "1%" }} />
-              </div>
+              onChange={(event) => searchRecipe(event.target.value)}
+            />
+            <div>
+              <SearchIcon style={{ marginRight: "1%" }} />
             </div>
-          ) : (
-            ""
-          )}
-
-          <Button color="inherit">Login</Button>
+          </div>
         </Toolbar>
       </AppBar>
     </Box>

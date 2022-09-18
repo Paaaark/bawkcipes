@@ -9,12 +9,14 @@ import { storage } from "../firebase";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-function RecipeCard({ width, recipe, expandRecipe }) {
+function RecipeCard({ recipe }) {
   const [cardColor, setCardColor] = useState("#ffffff");
   const [imagePath, setImagePath] = useState(null);
 
   useEffect(() => {
-    if (recipe.imageUploaded) {
+    if (recipe.downloadedImage) {
+      setImagePath(recipe.downloadedImage);
+    } else if (recipe.imageUploaded) {
       getDownloadURL(ref(storage, recipe.imagePath)).then((url) => {
         setImagePath(url);
       });
@@ -38,7 +40,6 @@ function RecipeCard({ width, recipe, expandRecipe }) {
         sx={{ width: "100%" }}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
-        onClick={expandRecipe}
       >
         <CardMedia
           component="img"

@@ -36,7 +36,7 @@ function DraftCard({ draft, onDelete }) {
   return (
     <Card
       sx={{
-        width: 345,
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",

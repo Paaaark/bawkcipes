@@ -1,25 +1,38 @@
 import React from "react";
+import { useEffect, useState } from "react";
 import DraftCard from "./DraftCard";
 import { Grid, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 
 const AddFragment = ({ drafts, onEdit, onCreate, onDelete }) => {
+  const [width, setWidth] = useState(window.innerWidth);
+
+  const handleResize = () => {
+    setWidth(window.innerWidth);
+  };
+
+  useEffect(() => {
+    handleResize();
+    window.addEventListener("resize", handleResize);
+  }, []);
+
   return (
     <Grid
       container
-      gap={2}
+      spacing={2}
       direction="row"
       justify="flex-start"
       paddingTop="10px"
       paddingLeft="10px"
     >
       {drafts.map((draft) => (
-        <DraftCard draft={draft} onEdit={onEdit} onDelete={onDelete} />
+        <Grid item xs={12 / Math.floor(width / 365)}>
+          <DraftCard draft={draft} onEdit={onEdit} onDelete={onDelete} />
+        </Grid>
       ))}
       <Grid
         container
-        width="345px"
-        height="345px"
+        xs={12 / Math.floor(width / 365)}
         direction="row"
         justifyContent="center"
         alignItems="center"

@@ -33,7 +33,7 @@ const MainFragment = ({ recipes, expandRecipe, keyword }) => {
   return (
     <Grid
       container
-      gap={2}
+      spacing={2}
       direction="row"
       justify="center"
       paddingTop="10px"
@@ -41,7 +41,7 @@ const MainFragment = ({ recipes, expandRecipe, keyword }) => {
       paddingRight="10px"
     >
       {filteredRecipes.map((recipe, index) => (
-        <Grid item xs>
+        <Grid item xs={12 / Math.floor(width / 365)}>
           <RecipeCard
             key={index}
             width={width / Math.floor(width / 365) - 25}

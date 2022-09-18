@@ -35,7 +35,7 @@ function RecipeCard({ width, recipe, expandRecipe }) {
   return (
     <Link to={"/recipe/" + recipe.title}>
       <Card
-        sx={{ width: { width } }}
+        sx={{ width: "100%" }}
         onMouseOver={onMouseOver}
         onMouseOut={onMouseOut}
         onClick={expandRecipe}

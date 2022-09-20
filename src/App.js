@@ -17,7 +17,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import MainFragment from "./components/MainFragment";
 import RecipeFragment from "./components/RecipeFragment";
-import { generateId, generateImageId } from "./Backend";
+import { generateImageId } from "./Backend";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 const App = () => {
@@ -32,6 +32,17 @@ const App = () => {
       const data = doc.data();
       data.id = doc.id;
       return data;
+    });
+    drafts.forEach((draft) => {
+      if (draft.imageUploaded) {
+        getDownloadURL(ref(storage, draft.imagePath)).then((url) => {
+          draft.downloadedImage = url;
+        });
+      } else {
+        getDownloadURL(ref(storage, "defaultFoodImage.png")).then((url) => {
+          draft.downloadedImage = url;
+        });
+      }
     });
     setDrafts(drafts);
   }
@@ -77,12 +88,8 @@ const App = () => {
   ]);
   const [keyword, setKeyword] = useState("");
 
-  const onCreate = () => {
-    setCurrentEditingDraft({
-      id: generateId(),
-      title: "",
-      description: "",
-    });
+  const onCreate = (id) => {
+    setDrafts([...drafts, { id: id, title: "", description: "" }]);
   };
 
   const saveDraft = (newDraft) => {
@@ -156,10 +163,7 @@ const App = () => {
             path="/"
             element={
               <div>
-                <MainFragment
-                  recipes={recipes}
-                  keyword={keyword}
-                />
+                <MainFragment recipes={recipes} keyword={keyword} />
                 <Link to="addDraft">
                   <FloatingActionButton />
                 </Link>

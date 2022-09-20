@@ -22,7 +22,9 @@ function DraftCard({ draft, onDelete }) {
   const [imagePath, setImagePath] = useState(null);
 
   useEffect(() => {
-    if (draft.imageUploaded) {
+    if (draft.downloadedImage) {
+      setImagePath(draft.downloadedImage);
+    } else if (draft.imageUploaded) {
       getDownloadURL(ref(storage, draft.imagePath)).then((url) => {
         setImagePath(url);
       });

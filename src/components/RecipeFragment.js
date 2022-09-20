@@ -1,4 +1,5 @@
 import React from "react";
+import NoRecipeFound from "./NoRecipeFound";
 import { Button, Grid } from "@mui/material";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
@@ -55,7 +56,7 @@ const RecipeFragment = ({ recipes }) => {
   };
 
   return recipe == null ? (
-    <p>Loading</p>
+    <NoRecipeFound recipes={recipes} keyword={id} />
   ) : (
     <Grid container direction="column" alignItems="center" paddingTop="10px">
       <Grid
@@ -130,7 +131,7 @@ const RecipeFragment = ({ recipes }) => {
           {openRecipe ? (
             recipe.steps.length !== 0 ? (
               recipe.steps.map((step, index) => (
-                <div key={index}>
+                <div key={index} style={{ marginTop: "10px" }}>
                   <Typography variant="h5">{"Step " + (index + 1)}</Typography>
                   <Typography variant="body1">{step}</Typography>
                 </div>

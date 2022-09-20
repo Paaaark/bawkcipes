@@ -3,9 +3,12 @@ import { useEffect, useState } from "react";
 import DraftCard from "./DraftCard";
 import { Grid, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import { generateId } from "../Backend";
 
 const AddFragment = ({ drafts, onEdit, onCreate, onDelete }) => {
   const [width, setWidth] = useState(window.innerWidth);
+  const navigate = useNavigate();
 
   const handleResize = () => {
     setWidth(window.innerWidth);
@@ -39,11 +42,18 @@ const AddFragment = ({ drafts, onEdit, onCreate, onDelete }) => {
       >
         <Grid
           container
+          sx={{ height: "345px" }}
           direction="column"
           justifyContent="center"
           alignItems="center"
         >
-          <IconButton onClick={onCreate}>
+          <IconButton
+            onClick={() => {
+              const id = generateId();
+              onCreate(id);
+              navigate("/draft/" + id);
+            }}
+          >
             <AddIcon />
           </IconButton>
           <Typography variant="h5">Create a new draft!</Typography>

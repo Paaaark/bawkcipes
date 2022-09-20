@@ -8,11 +8,12 @@ import Typography from "@mui/material/Typography";
 import styles from "../styles.css";
 import db, { storage } from "../firebase";
 import { getDownloadURL, ref } from "firebase/storage";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { collection, query, where, getDocs } from "firebase/firestore";
 
 const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
   let { id } = useParams();
+  const navigate = useNavigate();
   const mainDiv = useRef(null);
   const [draft, setDraft] = useState(null);
   const [title, setTitle] = useState("");
@@ -376,7 +377,10 @@ const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
                   fullWidth
                   color="secondary"
                   variant="outlined"
-                  onClick={() => onSaveDraft(getDraft())}
+                  onClick={() => {
+                    onSaveDraft(getDraft());
+                    navigate("/addDraft");
+                  }}
                 >
                   Save Draft
                 </Button>

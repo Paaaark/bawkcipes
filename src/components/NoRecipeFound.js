@@ -4,6 +4,7 @@ import PriorityHighIcon from "@mui/icons-material/PriorityHigh";
 import Typography from "@mui/material/Typography";
 import { relatedWords } from "../Backend";
 import { getDocs, collection } from "firebase/firestore";
+import { Link } from "react-router-dom";
 import db from "../firebase";
 
 const NoRecipeFound = ({ recipes, keyword }) => {
@@ -48,10 +49,16 @@ const NoRecipeFound = ({ recipes, keyword }) => {
           Sorry, we couldn't find the recipe "{keyword}"
         </Typography>
       </div>
-      <Typography align="center">Did you mean...</Typography>
+      <Typography align="center" variant="h6">
+        Did you mean...
+      </Typography>
       {relatedRecipes !== null
         ? relatedRecipes.map((recipe) => {
-            return <Typography align="center">{recipe.title}</Typography>;
+            return (
+              <Link to={"/recipe/" + recipe.title}>
+                <Typography align="center">{recipe.title}</Typography>
+              </Link>
+            );
           })
         : ""}
     </div>

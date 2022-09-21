@@ -25,6 +25,12 @@ const RecipeFragment = ({ recipes }) => {
   }, []);
 
   useEffect(() => {
+    for (const value of Object.values(recipes)) {
+      if (value.title === id) setRecipe(value);
+    }
+  }, [id]);
+
+  useEffect(() => {
     processRecipe();
   }, [recipe]);
 

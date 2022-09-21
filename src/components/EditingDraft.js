@@ -390,7 +390,10 @@ const EditingDraft = ({ drafts, onSaveDraft, uploadDraft }) => {
                   fullWidth
                   color="secondary"
                   variant="outlined"
-                  onClick={() => uploadDraft(getDraft())}
+                  onClick={() => {
+                    uploadDraft(getDraft());
+                    navigate("/");
+                  }}
                 >
                   Upload Recipe
                 </Button>
